@@ -6,14 +6,14 @@
 #SBATCH -o slurm-%j.out  # %j = job ID
 
 # Create new directory
-mkdir /project/pi_frederic_chain_uml_edu/Hackbio/Shiga/
+mkdir -p /project/pi_frederic_chain_uml_edu/Hackbio/Paschal_Repo/Shiga/
 
 # Copy fastq files from "stickleback_dataset" repository to "Shiga" repository
-cp /project/pi_frederic_chain_uml_edu/Hackbio/stickleback_dataset/DRR067131_1.fastq.gz /project/pi_frederic_chain_uml_edu/Hackbio/Shiga/
-cp /project/pi_frederic_chain_uml_edu/Hackbio/stickleback_dataset/DRR067131_2.fastq.gz /project/pi_frederic_chain_uml_edu/Hackbio/Shiga/
+cp /project/pi_frederic_chain_uml_edu/Hackbio/stickleback_dataset/DRR067131_1.fastq.gz /project/pi_frederic_chain_uml_edu/Hackbio/Paschal_Repo/Shiga/
+cp /project/pi_frederic_chain_uml_edu/Hackbio/stickleback_dataset/DRR067131_2.fastq.gz /project/pi_frederic_chain_uml_edu/Hackbio/Paschal_Repo/Shiga/
 
 # Change directory
-cd /project/pi_frederic_chain_uml_edu/Hackbio/Shiga/
+cd /project/pi_frederic_chain_uml_edu/Hackbio/Paschal_Repo/Shiga/
 
 # Load the required modules
 module load bwa/0.7.17
@@ -30,34 +30,34 @@ gunzip stickleback.fa.gz
 mkdir -p results
 
 # Generate index files
-bwa index /project/pi_frederic_chain_uml_edu/Hackbio/Shiga/stickleback.fa
+bwa index /project/pi_frederic_chain_uml_edu/Hackbio/Paschal_Repo/Shiga/stickleback.fa
 
 # Align reads to the reference genome using BWA
-bwa mem /project/pi_frederic_chain_uml_edu/Hackbio/Shiga/stickleback.fa /project/pi_frederic_chain_uml_edu/Hackbio/Shiga/DRR067131_1.fastq.gz /project/pi_frederic_chain_uml_edu/Hackbio/Shiga/DRR067131_2.fastq.gz > /project/pi_frederic_chain_uml_edu/Hackbio/Shiga/results/aligned.sam
+bwa mem /project/pi_frederic_chain_uml_edu/Hackbio/Paschal_Repo/Shiga/stickleback.fa /project/pi_frederic_chain_uml_edu/Hackbio/Paschal_Repo/Shiga/DRR067131_1.fastq.gz /project/pi_frederic_chain_uml_edu/Hackbio/Paschal_Repo/Shiga/DRR067131_2.fastq.gz > /project/pi_frederic_chain_uml_edu/Hackbio/Paschal_Repo/Shiga/results/aligned.sam
 
 # Convert the SAM file to BAM format using samtools
-samtools view -S -b /project/pi_frederic_chain_uml_edu/Hackbio/Shiga/results/aligned.sam > /project/pi_frederic_chain_uml_edu/Hackbio/Shiga/results/aligned.bam
+samtools view -S -b /project/pi_frederic_chain_uml_edu/Hackbio/Paschal_Repo/Shiga/results/aligned.sam > /project/pi_frederic_chain_uml_edu/Hackbio/Paschal_Repo/Shiga/results/aligned.bam
 
 # Sort the BAM file
-samtools sort /project/pi_frederic_chain_uml_edu/Hackbio/Shiga/results/aligned.bam -o /project/pi_frederic_chain_uml_edu/Hackbio/Shiga/results/sorted.bam
+samtools sort /project/pi_frederic_chain_uml_edu/Hackbio/Paschal_Repo/Shiga/results/aligned.bam -o /project/pi_frederic_chain_uml_edu/Hackbio/Paschal_Repo/Shiga/results/sorted.bam
 
 # Calculate the read coverage of positions in the genome
-bcftools mpileup -O b -o /project/pi_frederic_chain_uml_edu/Hackbio/Shiga/results/variants.bcf -f /project/pi_frederic_chain_uml_edu/Hackbio/Shiga/stickleback.fa --threads 8 -q 20 -Q 30 /project/pi_frederic_chain_uml_edu/Hackbio/Shiga/results/sorted.bam
+bcftools mpileup -O b -o /project/pi_frederic_chain_uml_edu/Hackbio/Paschal_Repo/Shiga/results/variants.bcf -f /project/pi_frederic_chain_uml_edu/Hackbio/Paschal_Repo/Shiga/stickleback.fa --threads 8 -q 20 -Q 30 /project/pi_frederic_chain_uml_edu/Hackbio/Paschal_Repo/Shiga/results/sorted.bam
 
 # Detect the single nucleotide variants (SNVs)
-bcftools call --ploidy 1 -m -v -o /project/pi_frederic_chain_uml_edu/Hackbio/Shiga/results/variants.vcf /project/pi_frederic_chain_uml_edu/Hackbio/Shiga/results/variants.bcf
+bcftools call --ploidy 1 -m -v -o /project/pi_frederic_chain_uml_edu/Hackbio/Paschal_Repo/Shiga/results/variants.vcf /project/pi_frederic_chain_uml_edu/Hackbio/Paschal_Repo/Shiga/results/variants.bcf
 
 # Filter and report the SNV variants in variant calling format (VCF)
-bcftools view /project/pi_frederic_chain_uml_edu/Hackbio/Shiga/results/variants.vcf -o /project/pi_frederic_chain_uml_edu/Hackbio/Shiga/results/filtered_variants.vcf
+bcftools view /project/pi_frederic_chain_uml_edu/Hackbio/Paschal_Repo/Shiga/results/variants.vcf -o /project/pi_frederic_chain_uml_edu/Hackbio/Paschal_Repo/Shiga/results/filtered_variants.vcf
 
 # Explore the VCF format
-less -S /project/pi_frederic_chain_uml_edu/Hackbio/Shiga/results/filtered_variants.vcf
+less -S /project/pi_frederic_chain_uml_edu/Hackbio/Paschal_Repo/Shiga/results/filtered_variants.vcf
 
 # Use the grep and wc commands to assess how many variants are in the VCF file
-grep -v "#" /project/pi_frederic_chain_uml_edu/Hackbio/Shiga/results/filtered_variants.vcf | wc -l
+grep -v "#" /project/pi_frederic_chain_uml_edu/Hackbio/Paschal_Repo/Shiga/results/filtered_variants.vcf | wc -l
 
 # Optional step: Assess the alignment (visualization)
-samtools index /project/pi_frederic_chain_uml_edu/Hackbio/Shiga/results/sorted.bam
+samtools index /project/pi_frederic_chain_uml_edu/Hackbio/Paschal_Repo/Shiga/results/sorted.bam
 
 # Viewing with tview
-samtools tview /project/pi_frederic_chain_uml_edu/Hackbio/Shiga/results/sorted.bam /project/pi_frederic_chain_uml_edu/Hackbio/Shiga/stickleback.fa
+samtools tview /project/pi_frederic_chain_uml_edu/Hackbio/Paschal_Repo/Shiga/results/sorted.bam /project/pi_frederic_chain_uml_edu/Hackbio/Paschal_Repo/Shiga/stickleback.fa
